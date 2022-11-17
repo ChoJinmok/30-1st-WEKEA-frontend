@@ -138,9 +138,62 @@
 
 #### `리팩터링 계획`
 
-- 유효성 검사의 결과 숫자를 바로 jsx에서 문자로 변환해주다 보니 가독성이 많이 떨어지고 숫자가 무엇을 의미하는지 파악하기가 힘들었던 것 같습니다. 유효성 검사의 결과 숫자를 키값으로 가지는 객체를 만들어서 결과가 어떤 결과를 가리키는지 명확하게 하고싶습니다.
+- 유효성 검사의 결과 숫자를 바로 jsx에서 문자로 변환해주다 보니 가독성이 많이 떨어지고 숫자가 무엇을 의미하는지 파악하기가 힘들었던 것 같습니다. -> 숫자로 검사결과를 담는 것이 아니라 바로 문자열로 화면에 보여주고 싶은 메시지를 유효성 결과 state에 담아주고 state를 화면에 보여주는 방식으로 리팩터링 하고 싶습니다.
 - 회원가입 제출 함수가 유효성 검사, 포커스, 서버로 데이터 보내기 이렇게 세가지 일을 하는데 각 역할을 함수로 작성해줘서 코드가 어떤 역할을 하는지 명확하게 해주어서 가독성를 높이고 싶습니다.
 - 이것 역시 input 컴포넌트를 적절히 나누면 유효성 검사 함수가 훨씬 간결해질 거 같습니다.
+
+</br>
+
+### 4.3. 인테리어 공간 이미지에 좌표 찍기
+
+#### `트러블 상황`
+
+- 사용자가 가구를 고를 때 단순히 가구 이미지만 보고 가구를 선택하는 것이 아니라 인테리어가 이루어진 공간에서 가구를 보고 가구를 선택할 수 있게 하고 싶었습니다.
+- 서버에서 api가 구현되지 않아서 mock 데이터를 직접 작성했어야했습니다.
+
+#### `트러블 슈팅`
+
+- 좌표의 개수, 위치, 상품의 정보 등이 필요했고 프론트에서 단독으로 구현하는 것이 아닌 서버에서 이런 정보들이 모두 있어야한다고 판단했습니다. -> [데이터 구조 결정](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/public/data/mainSaleProduct.json)
+- 각 인테리어에서 좌표들이 담긴 배열을 만든 후 배열을 jsx에서 화면에 렌더링하는 방식으로 구현했습니다.
+
+### 4.4. 인테리어 공간 이미지 좌표들의 정보는 언제 보여줄것인가?
+
+#### `트러블 상황`
+
+- 인테리어 공간 이미지에서 모든 지점 정보를 보여주면 사용자 입장에서 가독성도 떨어지고 어느 가구의 정보인지 파악하는 것도 힘들겠다 생각했습니다.
+- 그래서 각 좌표 지점들 중 처음에 기본값으로 한 지점의 정보를 보여주고 나머지 지점들은 마우스가 좌표에 올라 갔을 때 각 정보를 화면에 보여주는 방식으로 처리해주고 싶었습니다.
+- 마우스가 아웃되면 다시 좌표에 해당하는 가구 정보를 보여주지 않고 싶었고 마우스가 인테리어 공간 이미지에서 벗어나면 기본값으로 돌아가서 처음에 보여준 지점의 정보를 다시 보여주고 싶었습니다.
+
+#### `트러블 슈팅`
+
+- 앞서 말한 기능을 구현하려면 어떤 좌표가 처음에 기본값으로 보여주고자 하는 가구인지 서버에 저장돼있어야 판단해서 mock data에 default hover라는 정보를 각 좌표에 추가했습니다.
+- [마우스가 각 좌표에 올라갔을 때](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Main/Main.js#L18), [마우스가 좌표에서 벗어날 때](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Main/Main.js#L34), [마우스가 인테리어 공간 이미지를 벗어날 때](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Main/Main.js#L46), 이렇게 세가지 경우에 대응할 수 있게 함수를 각각 만들었습니다.
+  - 각 함수는 분기문과 반복문을 이용해서 화면에 보일지 말지를 결정했습니다. (defaultHover값이 true일 때 화면에 보입니다.)
+- defaultHover가 true일 때 'connectingDotHover' className을 줘서 visibility, opacity을 조정했습니다. ( [CSS 코드](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Main/component/LinkPoint.scss#L52), [JSX 코드](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Main/component/LinkPoint.js#L30) )
+
+#### `리팩터링 계획`
+
+- 각 좌표가 이미지에 찍혀있고 각 정보가 화면에 보이는 위치도 서버에서 줘야한다고 판단해서 mock data를 만들었는데 정보 위치는 프론트에서 정해주는 것이기 때문에 굳이 데이터에 들어가 있을 필요가 없을 거 같습니다.
+- 마우스 이벤트 함수들이 map 메서드내부에 if문 내부에 for문 내부에 if-else문으로 이어지기 때문에 가독성이 많이 떨어지기 때문에 함수를 좀 더 간결하고 가독성을 높이는 작업을 할 것 같습니다.
+
+  <details>
+  <summary><b>리팩터링 예시</b></summary>
+  <div markdown="1">
+
+  [원본 코드](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Main/Main.js#L18)
+
+  ```javascript
+  const hoverDot = (imgIndex, dotIndex) => {
+    points[imgIndex].dots.forEach((dot, index) => {
+      dot.hover = index === dotIndex;
+    });
+
+    setPoints([...points]);
+  };
+  ```
+
+  </div>
+  </details>
 
 </br>
 
@@ -150,12 +203,4 @@
 
 ## 6. 회고 / 느낀점
 
-> 프로젝트 개발 회고 글: https://jjmok.tistory.com/entry/%EC%9C%84%EC%BD%94%EB%93%9C-1%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0%EB%A1%9D
-
-1. 회원가입에서 하나의 컴포넌트가 모든 input들을 다 표현해줄 수 있도록 했던 것
-
-리팩터링
-
-1. 체크박스 더 제너럴하게 작성
-2. 회원가입 유효성검사 숫자가 아닌 객체로 관리
-3. if else
+> [프로젝트 개발 회고 글](https://jjmok.tistory.com/entry/%EC%9C%84%EC%BD%94%EB%93%9C-1%EC%B0%A8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%9A%8C%EA%B3%A0%EB%A1%9D)
