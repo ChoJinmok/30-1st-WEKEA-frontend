@@ -156,6 +156,8 @@
 - 좌표의 개수, 위치, 상품의 정보 등이 필요했고 프론트에서 단독으로 구현하는 것이 아닌 서버에서 이런 정보들이 모두 있어야한다고 판단했습니다. -> [데이터 구조 결정](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/public/data/mainSaleProduct.json)
 - 각 인테리어에서 좌표들이 담긴 배열을 만든 후 배열을 jsx에서 화면에 렌더링하는 방식으로 구현했습니다.
 
+</br>
+
 ### 4.4. 인테리어 공간 이미지 좌표들의 정보는 언제 보여줄것인가?
 
 #### `트러블 상황`
@@ -197,9 +199,107 @@
 
 </br>
 
+### 4.5. 체크박스 스타일링
+
+#### `트러블 상황`
+
+- 체크박스를 스타일링해주고 싶은 상황이었는데 HTML에서 기본적으로 제공하는 체크박스는 CSS의 스타일링이 먹히지 않았습니다.
+- 찾아보니 CSS로 스타일을 주는 것이 아니라 이미지를 가지고와서 구현하는 방법이 있긴했지만 HTML, CSS, JS만으로 해결해보고 싶었습니다.
+
+#### `트러블 슈팅`
+
+- 진짜 checkbox는 opacity로 숨겨주고 checkbox아래에 div로 체크박스 모양을 만들어줬습니다.
+- CSS를 이용해서 투명해진 checkbox가 클릭되면 div로 만든 checkbox가 체크되로록 구현했습니다. [코드 확인](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/component/CheckboxRadio.scss#L101)
+
+</br>
+
+### 4.6. 하위 항목이 있는 체크박스 구현
+
+#### `트러블 상황`
+
+- 회원가입 시 연락 수신 동의를 받는 체크박스를 구현하려고 했는데 하위 항목이 있는 체크박스이기 때문에 상위 체크박스를 클릭하면 하위 항목들이 모두 체크가 됐어야했습니다.
+- 처음엔 단순하게 상위 항목에 state를 하나를 연결해서 state가 true가 되면 하위 항목들이 체크가 활성화되고 false가 되면 비활성화되게 구현했지만 더 복잡한 상황을 구현하려면 다른 방법이 필요했습니다. (다른 웹사이트 참고)
+  - 상위 항목 체크 -> 하위 항목 모두 활성화
+  - 상위 항목 체크 해제 -> 하위 항목 모두 비활성화
+  - 하위 항목 하나라도 체크 -> 상위 체크박스 활성화
+  - 하위 항목이 모두 비활성화 -> 상위 체크박스 비활성화
+  - 하위 항목 하나라도 체크 돼있을 때 상위 항목 체크 해제 -> 하위 항목 모두 비활성화
+
+#### `트러블 슈팅`
+
+- 체크박스 항목들을 배열로 관리를 했습니다.
+- 배열에 항목의 ID가 들어 있을 경우 체크가 활성화되는 식으로 구현했습니다.
+- 상위 항목 ( [코드 확인](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/Signup.js#L77) )
+  - 체크 해제 시 하위 항목이 하나라도 있으면 배열을 모두 비워줬습니다.
+  - 체크 활성화 시 모든 ID를 배열에 추가했습니다.
+- 하위 항목 ( [코드 확인](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/Signup.js#L94) )
+  - 하위 항목 중 하나라도 클릭이 되면 해당 하위 항목 ID와 상위 항목 ID를 배열에 추가했습니다.
+  - 반대로 하위 항목이 체크 해제되면 배열에서 뺐습니다.
+
+#### `리팩터링 계획`
+
+- 이 부분 또한 모든 체크박스를 컴포넌트 하나로 관리하는 것에서부터 로직이 꼬였습니다. -> 컴포넌트 분리
+- 현재의 코드는 다른 체크박스에는 적용을 시킬 수 없는 로직인데(항목이 추가되면 하드코딩 해줘야함) 좀 더 유연하게 적용할 수 있게 코드를 바꾸고 싶습니다.
+- 배열로 관리하는 아이디어는 좋았다고 생각하지만 로직을 좀 더 간결하고 가독성 높게 구현할 수 있을 것 같습니다.
+
+  - 배열에 항목이 하나라도 있을 경우 -> 상위 항목 활성화
+  - 배열에 항목이 하나라도 있을 경우 상위 항목 비활성화 -> 배열 모두 비워줌
+  - 배열이 비워진 상태에서 상위 항목 활성화 -> 배열에 하위 항목 모두 추가
+
+  <details>
+  <summary><b>리팩터링 예시</b></summary>
+  <div markdown="1">
+
+  - 일단 input의 check attribute를 상위 항목일 경우 빈배열인지 아닌지로 판별, 하위 항목일 경우 해당 id가 있는지로 판별해서 체크의 활성화, 비활성화를 구분해줄 거 같습니다.
+
+  - [원본 코드](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/Signup.js#L77)
+
+    ```javascript
+    const clickAllCheckbox = () => {
+      if (familySignupContactChecks.length) {
+        setFamilySignupContactChecks([]);
+
+        return;
+      }
+
+      CONTACT_ALLOW_DATA.forEach((contactType, index) => {
+        if (index === 0) return;
+
+        familySignupContactChecks.push(contactType.id);
+      });
+
+      setFamilySignupContactChecks([...familySignupContactChecks]);
+    };
+    ```
+
+  - [원본 코드](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/Signup.js#L94)
+
+    ```javascript
+    const clickSingleCheckbox = (checked, id) => {
+      if (checked) {
+        familySignupContactChecks.push(id);
+
+        setFamilySignupContactChecks([...familySignupContactChecks]);
+
+        return;
+      }
+
+      setFamilySignupContactChecks(
+        familySignupContactChecks.filter(contactTypeId => contactTypeId !== id)
+      );
+    };
+    ```
+
+  </div>
+  </details>
+
+</br>
+
 ## 5. 그 외 트러블 슈팅
 
-### 5.1. 회원 가입 페이지의 input들을 하나의 컴포넌트로 모두 관리하는 문제
+### 5.1.
+
+</br>
 
 ## 6. 회고 / 느낀점
 
