@@ -7,8 +7,8 @@
 ## 1. 제작 기간 & 참여 인원
 
 - 2022년 2월 28일 ~ 3월 11일
-- 프론트 엔드 : 조진목, 안광민, 유강호
-- 백엔드 : 김산, 김광일
+- 프론트 엔드 : [안광민](https://github.com/kwangmon), [유강호](https://github.com/KanghoYoo), [조진목](https://github.com/ChoJinmok)
+- 백엔드 : [김광일](https://github.com/Kimgwangil), [김산](https://github.com/cloudhat)
 
 </br>
 
@@ -131,7 +131,7 @@
 - check-box의 경우에는 필수 항목 유효성 검사만 진행하면됐습니다. -> 필수 check-box에 체크를 했다가 다시 풀어줄 경우(blur event) 검사를 실시했습니다. ( [코드 확인](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/component/CheckboxRadio.js#L25) )
 - 회원가입 제출 버튼을 클릭하면 필수항목인데 입력하지 않았거나 체크하지 않았을 경우의 결과만 검사하면 됐습니다.
   - 반복문과 유효성 검사 결과 state의 key값들을 통해 input value들의 state를 검사해줬고 결과를 유효성 검사 결과 state로 setState해줬습니다. ( [코드 확인](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/Signup.js#L119) )
-- 회원가입 제출 버튼을 클릭 시 유효성 검사를 통과하지 못한 항목 중 최상단 항목에 focuc되게 하기위해 useRef를 배열로 관리하고 callback ref를 사용했습니다. ( [코드 확인](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/Signup.js#L224) )
+- 회원가입 제출 버튼을 클릭 시 유효성 검사를 통과하지 못한 항목 중 최상단 항목에 focus되게 하기위해 useRef를 배열로 관리하고 callback ref를 사용했습니다. ( [코드 확인](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/Signup.js#L224) )
   - ref 배열을 반복문으로 접근해서 각 항목을 검사했습니다. ( [코드 확인](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/Signup.js#L129) )
   - 필수 항목에만 ref를 전달 해줬는데 전달 안된 항목은 반복문에서 건너띄게했습니다. ( [코드 확인](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/Signup.js#L130) )
   - 앞에서 8개 항목은 input 그 뒤로는 check-box여서 input은 name으로 바로 접근하고 check-box의 경우 id로 접근했습니다. ( [코드 확인](https://github.com/ChoJinmok/30-1st-WEKEA-frontend/blob/master/src/pages/Signup/Signup.js#L136) )
@@ -246,6 +246,8 @@
   - 배열에 항목이 하나라도 있을 경우 상위 항목 비활성화 -> 배열 모두 비워줌
   - 배열이 비워진 상태에서 상위 항목 활성화 -> 배열에 하위 항목 모두 추가
 
+  </br>
+
   <details>
   <summary><b>리팩터링 예시</b></summary>
   <div markdown="1">
@@ -295,9 +297,11 @@
 
 </br>
 
+</br>
+
 ## 5. 그 외 트러블 슈팅
 
-### 5.1.
+### 5.1. 회원가입 placeholder 애니메이션
 
 </br>
 
